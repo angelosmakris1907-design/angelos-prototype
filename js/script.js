@@ -66,6 +66,28 @@ function sortTasks() {
   });
 }
 
+function getPriority(text) {
+  const lowerText = text.toLowerCase();
+
+  if (
+    lowerText.includes("urgent") ||
+    lowerText.includes("important") ||
+    lowerText.includes("high priority")
+  ) {
+    return "High";
+  }
+
+  if (
+    lowerText.includes("low priority") ||
+    lowerText.includes("not urgent")
+  ) {
+    return "Low";
+  }
+
+  return "Medium";
+}
+
+
 function showTasks() {
     sortTasks();
   taskList.innerHTML = "";
@@ -123,6 +145,11 @@ function showTasks() {
     textBox.appendChild(text);
     textBox.appendChild(date);
 
+    const priority = document.createElement("div");
+    priority.className = "task-date";
+    priority.textContent = "Priority: " + task.priority;
+    textBox.appendChild(priority);
+
     left.appendChild(checkbox);
     left.appendChild(textBox);
 
@@ -146,6 +173,7 @@ editBtn.addEventListener("click", () => {
   tasks[index].text = cleanTaskText(cleanedText);
   tasks[index].dueDate = getDueDate(cleanedText);
   tasks[index].dueTime = getDueTime(cleanedText);
+  tasks[index].priority = getPriority(cleanedText);
 
   saveTasks();
   showTasks();
@@ -175,7 +203,8 @@ function addTask(text) {
     done: false,
     createdAt: new Date().toISOString(),
     dueDate: getDueDate(text),
-    dueTime: getDueTime(text)
+    dueTime: getDueTime(text),
+    priority: getPriority(text)
   };
 
   tasks.push(newTask);
