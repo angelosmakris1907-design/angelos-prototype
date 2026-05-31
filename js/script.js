@@ -7,6 +7,7 @@ const addTaskBtn = document.getElementById("addTaskBtn");
 const allBtn = document.getElementById("allBtn");
 const activeBtn = document.getElementById("activeBtn");
 const completedBtn = document.getElementById("completedBtn");
+const nextTask = document.getElementById("nextTask");
 
 let currentFilter = "all";
 
@@ -123,12 +124,51 @@ function getDueStatus(task) {
   return "";
 }
 
+function getTaskDateTime(task) {
+  if (!task.dueDate) {
+    return null;
+  }
+
+  const date = new Date(task.dueDate);
+
+  if (task.dueTime) {
+    const [hour, minute] = task.dueTime.split(":");
+    date.setHours(Number(hour), Number(minute), 0, 0);
+  }
+
+  return date;
+}
+
+function showNextTask() {
+  const activeTasks = tasks.filter(task => task.done !== true);
+
+  if (activeTasks.length === 0) {
+    nextTask.textContent = "No active tasks.";
+    return;
+  }
+
+  activeTasks.sort((a, b) => {
+    const dateA = getTaskDateTime(a);
+    const dateB = getTaskDateTime(b);
+
+    if (!dateA && !dateB) return 0;
+    if (!dateA) return 1;
+    if (!dateB) return -1;
+
+    return dateA - dateB;
+  });
+
+  nextTask.textContent = activeTasks[0].text;
+}
+
+
 function showTasks() {
     sortTasks();
   taskList.innerHTML = "";
 
   if (tasks.length === 0) {
     taskList.innerHTML = "<p>No tasks yet.</p>";
+    showNextTask();
     return;
   }
 
@@ -161,7 +201,7 @@ function showTasks() {
     checkbox.addEventListener("change", () => {
       task.done = checkbox.checked;
       saveTasks();
-      showTasks();
+      refreshUI();
     });
 
     const textBox = document.createElement("div");
@@ -230,7 +270,7 @@ editBtn.addEventListener("click", () => {
   task.category = getCategory(cleanedText);
 
   saveTasks();
-  showTasks();
+  refreshUI();
 });
 
 
@@ -241,7 +281,7 @@ editBtn.addEventListener("click", () => {
     deleteBtn.addEventListener("click", () => {
       tasks.splice(index, 1);
       saveTasks();
-      showTasks();
+      refreshUI();
     });
 
     item.appendChild(left);
@@ -264,7 +304,7 @@ function addTask(text) {
 
   tasks.push(newTask);
   saveTasks();
-  showTasks();
+  refreshUI();
 }
 
 function cleanTaskText(text) {
@@ -306,6 +346,11 @@ function getCategory(text) {
   }
 
   return "General";
+}
+
+function refreshUI() {
+  showTasks();
+  showNextTask();
 }
 
 const SpeechRecognition =
@@ -384,3 +429,4 @@ addTaskBtn.addEventListener("click", () => {
     });
 
 showTasks();
+showNextTask();
