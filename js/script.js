@@ -126,6 +126,32 @@ function showTasks() {
     left.appendChild(checkbox);
     left.appendChild(textBox);
 
+    const editBtn = document.createElement("button");
+editBtn.className = "delete-btn";
+editBtn.textContent = "Edit";
+
+editBtn.addEventListener("click", () => {
+  const newText = prompt("Edit task:", task.text);
+
+  if (newText === null) {
+    return;
+  }
+
+  const cleanedText = newText.trim();
+
+  if (cleanedText === "") {
+    return;
+  }
+
+  tasks[index].text = cleanTaskText(cleanedText);
+  tasks[index].dueDate = getDueDate(cleanedText);
+  tasks[index].dueTime = getDueTime(cleanedText);
+
+  saveTasks();
+  showTasks();
+});
+
+
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "delete-btn";
     deleteBtn.textContent = "Delete";
@@ -137,6 +163,7 @@ function showTasks() {
     });
 
     item.appendChild(left);
+    item.appendChild(editBtn);
     item.appendChild(deleteBtn);
     taskList.appendChild(item);
   });
