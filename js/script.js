@@ -4,6 +4,11 @@ const output = document.getElementById("output");
 const taskList = document.getElementById("taskList");
 const taskInput = document.getElementById("taskInput");
 const addTaskBtn = document.getElementById("addTaskBtn");
+const allBtn = document.getElementById("allBtn");
+const activeBtn = document.getElementById("activeBtn");
+const completedBtn = document.getElementById("completedBtn");
+
+let currentFilter = "all";
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
@@ -87,6 +92,17 @@ function getPriority(text) {
   return "Medium";
 }
 
+function getFilteredTasks() {
+  if (currentFilter === "active") {
+    return tasks.filter(task => !task.done);
+  }
+
+  if (currentFilter === "completed") {
+    return tasks.filter(task => task.done);
+  }
+
+  return tasks;
+}
 
 function showTasks() {
     sortTasks();
@@ -97,7 +113,7 @@ function showTasks() {
     return;
   }
 
-  tasks.forEach((task, index) => {
+  getFilteredTasks().forEach((task, index) => {
     const item = document.createElement("li");
     item.className = "task";
 
@@ -268,6 +284,21 @@ readBtn.addEventListener("click", () => {
 
   speak("Here are your tasks. " + taskText);
 });
+
+allBtn.onclick = () => {
+  currentFilter = "all";
+  showTasks();
+};
+
+activeBtn.onclick = () => {
+  currentFilter = "active";
+  showTasks();
+};
+
+completedBtn.onclick = () => {
+  currentFilter = "completed";
+  showTasks();
+};
 
 addTaskBtn.addEventListener("click", () => {
   const typedText = taskInput.value.trim();
