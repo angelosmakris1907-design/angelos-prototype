@@ -166,6 +166,11 @@ function showTasks() {
     priority.textContent = "Priority: " + task.priority;
     textBox.appendChild(priority);
 
+    const category = document.createElement("div");
+    category.className = "task-date";
+    category.textContent = "Category: " + (task.category || "General");
+    textBox.appendChild(category);
+
     left.appendChild(checkbox);
     left.appendChild(textBox);
 
@@ -190,6 +195,7 @@ editBtn.addEventListener("click", () => {
   tasks[index].dueDate = getDueDate(cleanedText);
   tasks[index].dueTime = getDueTime(cleanedText);
   tasks[index].priority = getPriority(cleanedText);
+  tasks[index].category = getCategory(cleanedText);
 
   saveTasks();
   showTasks();
@@ -220,7 +226,8 @@ function addTask(text) {
     createdAt: new Date().toISOString(),
     dueDate: getDueDate(text),
     dueTime: getDueTime(text),
-    priority: getPriority(text)
+    priority: getPriority(text),
+    category: getCategory(text)
   };
 
   tasks.push(newTask);
@@ -234,6 +241,39 @@ function cleanTaskText(text) {
         .replace(/today/gi, "")
         .replace(/at \d{1,2}(:\d{2})?/gi, "")
         .trim();
+}
+
+function getCategory(text) {
+  const lowerText = text.toLowerCase();
+
+  if (
+    lowerText.includes("study") ||
+    lowerText.includes("homework") ||
+    lowerText.includes("revise") ||
+    lowerText.includes("assignment")
+  ) {
+    return "Study";
+  }
+
+  if (
+    lowerText.includes("buy") ||
+    lowerText.includes("shopping") ||
+    lowerText.includes("milk") ||
+    lowerText.includes("groceries")
+  ) {
+    return "Shopping";
+  }
+
+
+  if (
+    lowerText.includes("doctor") ||
+    lowerText.includes("appointment") ||
+    lowerText.includes("hospital")
+  ) {
+    return "Health";
+  }
+
+  return "General";
 }
 
 const SpeechRecognition =
