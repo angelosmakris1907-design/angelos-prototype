@@ -104,6 +104,25 @@ function getFilteredTasks() {
   return tasks;
 }
 
+function getDueStatus(task) {
+  if (!task.dueDate) {
+    return "";
+  }
+
+  const now = new Date();
+  const dueDate = new Date(task.dueDate);
+
+  if (dueDate.toDateString() === now.toDateString()) {
+    return "Due today";
+  }
+
+  if (dueDate < now) {
+    return "Overdue";
+  }
+
+  return "";
+}
+
 function showTasks() {
     sortTasks();
   taskList.innerHTML = "";
@@ -114,8 +133,19 @@ function showTasks() {
   }
 
   getFilteredTasks().forEach((task, index) => {
+
     const item = document.createElement("li");
     item.className = "task";
+
+    const statusText = getDueStatus(task);
+
+    if (statusText === "Overdue") {
+      item.classList.add("overdue");
+    }
+
+    if (statusText === "Due today") {
+      item.classList.add("due-today");
+    }
 
     if (task.done) {
       item.classList.add("completed");
@@ -129,7 +159,7 @@ function showTasks() {
     checkbox.checked = task.done;
 
     checkbox.addEventListener("change", () => {
-      tasks[index].done = checkbox.checked;
+      task.done = checkbox.checked;
       saveTasks();
       showTasks();
     });
@@ -166,10 +196,12 @@ function showTasks() {
     priority.textContent = "Priority: " + task.priority;
     textBox.appendChild(priority);
 
-    const category = document.createElement("div");
-    category.className = "task-date";
-    category.textContent = "Category: " + (task.category || "General");
-    textBox.appendChild(category);
+    if (statusText !== "") {
+      const status = document.createElement("div");
+      status.className = "task-date";
+      status.textContent = "Status: " + statusText;
+      textBox.appendChild(status);
+    }
 
     left.appendChild(checkbox);
     left.appendChild(textBox);
@@ -191,11 +223,11 @@ editBtn.addEventListener("click", () => {
     return;
   }
 
-  tasks[index].text = cleanTaskText(cleanedText);
-  tasks[index].dueDate = getDueDate(cleanedText);
-  tasks[index].dueTime = getDueTime(cleanedText);
-  tasks[index].priority = getPriority(cleanedText);
-  tasks[index].category = getCategory(cleanedText);
+  task.text = cleanTaskText(cleanedText);
+  task.dueDate = getDueDate(cleanedText);
+  task.dueTime = getDueTime(cleanedText);
+  task.priority = getPriority(cleanedText);
+  task.category = getCategory(cleanedText);
 
   saveTasks();
   showTasks();

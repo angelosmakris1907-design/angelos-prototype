@@ -88,3 +88,11 @@ button {
   font-size: 14px;
   padding: 8px 10px;
 }
+
+.overdue {
+  border-left: 6px solid red;
+}
+
+.due-today {
+  border-left: 6px solid orange;
+}
