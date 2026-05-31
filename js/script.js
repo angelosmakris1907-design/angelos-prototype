@@ -387,6 +387,26 @@ function handleVoiceInput(text) {
   speak("Task added: " + text);
 }
 
+function readTasksAloud() {
+  if (tasks.length === 0) {
+    speak("You have no tasks.");
+    return;
+  }
+
+  const unfinishedTasks = tasks.filter(task => !task.done);
+
+  if (unfinishedTasks.length === 0) {
+    speak("All your tasks are completed.");
+    return;
+  }
+
+  const taskText = unfinishedTasks
+    .map((task, index) => `Task ${index + 1}: ${task.text}`)
+    .join(". ");
+
+  speak("Here are your tasks. " + taskText);
+}
+
 
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -417,11 +437,6 @@ if (!SpeechRecognition) {
 }
 
 readBtn.addEventListener("click", () => {
-  if (tasks.length === 0) {
-    speak("You have no tasks.");
-    return;
-  }
-
   const unfinishedTasks = tasks.filter(task => !task.done);
 
   if (unfinishedTasks.length === 0) {
