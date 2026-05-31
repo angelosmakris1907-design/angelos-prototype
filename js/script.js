@@ -305,6 +305,7 @@ function addTask(text) {
   tasks.push(newTask);
   saveTasks();
   refreshUI();
+  return newTask;
 }
 
 function cleanTaskText(text) {
@@ -408,8 +409,35 @@ function handleVoiceInput(text) {
     return;
   }
 
-  addTask(text);
-  speak("Task added: " + text);
+  if (
+    lowerText.startsWith("mark ") &&
+    lowerText.includes(" complete")
+  ) {
+    const taskName = lowerText
+      .replace("mark ", "")
+      .replace(" complete", "")
+      .trim();
+
+    const matchingTask = tasks.find(task =>
+      task.done !== true &&
+      task.text.toLowerCase().includes(taskName)
+    );
+
+    if (!matchingTask) {
+      speak("I could not find that active task.");
+      return;
+    }
+
+    matchingTask.done = true;
+    saveTasks();
+    refreshUI();
+
+    speak("I marked " + matchingTask.text + " as complete.");
+    return;
+  }
+
+  const task = addTask(text);
+  speak(buildConfirmation(task));
 }
 
 function readTasksAloud() {
@@ -432,6 +460,26 @@ function readTasksAloud() {
   speak("Here are your tasks. " + taskText);
 }
 
+function buildConfirmation(task) {
+  let message = "I added " + task.text;
+
+  if (task.dueDate) {
+    const dueDate = new Date(task.dueDate);
+    const today = new Date();
+
+    if (dueDate.toDateString() === today.toDateString()) {
+      message += " for today";
+    } else {
+      message += " for tomorrow";
+    }
+  }
+
+  if (task.dueTime) {
+    message += " at " + task.dueTime;
+  }
+
+  return message;
+}
 
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
