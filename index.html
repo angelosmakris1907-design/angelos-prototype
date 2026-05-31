@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Angelos Prototype</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <h1>Angelos</h1>
+    <p class="subtitle">Your voice planner</p>
+
+    <button id="startBtn">🎤 Start Speaking</button>
+
+    <button id="readBtn">🔊 Read My Tasks</button>
+
+    <div class="manual-task">
+        <input id="taskInput" type="text" placeholder="Type a task..." />
+        <button id="addTaskBtn">Add Task</button>
+    </div>
+
+    <section class="card">
+      <h2>You said:</h2>
+      <p id="output">Nothing yet.</p>
+    </section>
+
+    <section class="card">
+      <h2>Your tasks</h2>
+      <ul id="taskList"></ul>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
