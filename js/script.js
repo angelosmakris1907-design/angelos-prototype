@@ -10,6 +10,7 @@ const completedBtn = document.getElementById("completedBtn");
 const nextTask = document.getElementById("nextTask");
 
 let currentFilter = "all";
+let lastDeletedTask = null;
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
@@ -454,6 +455,8 @@ function handleVoiceInput(text) {
       return;
     }
 
+    lastDeletedTask = matchingTask;
+
     tasks = tasks.filter(task => task !== matchingTask);
     saveTasks();
     refreshUI();
@@ -461,6 +464,26 @@ function handleVoiceInput(text) {
     speak("I deleted " + matchingTask.text + ".");
     return;
   }
+
+  if (
+    lowerText === "undo" ||
+    lowerText.includes("undo delete") ||
+    lowerText.includes("restore task")
+  ) {
+    if (!lastDeletedTask) {
+      speak("There is no deleted task to restore.");
+      return;
+    }
+
+  tasks.push(lastDeletedTask);
+  lastDeletedTask = null;
+
+  saveTasks();
+  refreshUI();
+
+  speak("I restored the task.");
+  return;
+}
 
   const task = addTask(text);
   speak(buildConfirmation(task));
