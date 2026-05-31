@@ -436,6 +436,32 @@ function handleVoiceInput(text) {
     return;
   }
 
+  if (
+    lowerText.startsWith("delete ") ||
+    lowerText.startsWith("remove ")
+  ) {
+    const taskName = lowerText
+      .replace("delete ", "")
+      .replace("remove ", "")
+      .trim();
+
+    const matchingTask = tasks.find(task =>
+      task.text.toLowerCase().includes(taskName)
+    );
+
+    if (!matchingTask) {
+      speak("I could not find that task.");
+      return;
+    }
+
+    tasks = tasks.filter(task => task !== matchingTask);
+    saveTasks();
+    refreshUI();
+
+    speak("I deleted " + matchingTask.text + ".");
+    return;
+  }
+
   const task = addTask(text);
   speak(buildConfirmation(task));
 }
