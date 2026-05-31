@@ -353,6 +353,41 @@ function refreshUI() {
   showNextTask();
 }
 
+function handleVoiceInput(text) {
+  const lowerText = text.toLowerCase();
+
+  if (
+    lowerText.includes("what is my next task") ||
+    lowerText.includes("what's my next task") ||
+    lowerText.includes("what should i do")
+  ) {
+    const activeTasks = tasks.filter(task => task.done !== true);
+
+    if (activeTasks.length === 0) {
+      speak("You have no active tasks.");
+      return;
+    }
+
+    activeTasks.sort((a, b) => {
+      const dateA = getTaskDateTime(a);
+      const dateB = getTaskDateTime(b);
+
+      if (!dateA && !dateB) return 0;
+      if (!dateA) return 1;
+      if (!dateB) return -1;
+
+      return dateA - dateB;
+    });
+
+    speak("Your next task is " + activeTasks[0].text);
+    return;
+  }
+
+  addTask(text);
+  speak("Task added: " + text);
+}
+
+
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -373,8 +408,7 @@ if (!SpeechRecognition) {
 
     output.textContent = spokenText;
 
-    addTask(spokenText);
-    speak("Task added: " + spokenText);
+    handleVoiceInput(spokenText);
   };
 
   recognition.onerror = (event) => {
