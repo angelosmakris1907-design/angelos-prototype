@@ -382,6 +382,31 @@ function handleVoiceInput(text) {
     speak("Your next task is " + activeTasks[0].text);
     return;
   }
+  if (
+    lowerText.includes("read my tasks") ||
+    lowerText.includes("tell me my tasks")
+  ) {
+    readTasksAloud();
+    return;
+  } 
+
+  if (
+    lowerText.includes("how many tasks") ||
+    lowerText.includes("how many things do i have")
+  ) {
+    const activeCount = tasks.filter(task => task.done !== true).length;
+    const completedCount = tasks.filter(task => task.done === true).length;
+
+    speak(
+      "You have " +
+        activeCount +
+        " active tasks and " +
+        completedCount +
+        " completed tasks."
+    );
+
+    return;
+  }
 
   addTask(text);
   speak("Task added: " + text);
@@ -436,20 +461,7 @@ if (!SpeechRecognition) {
   };
 }
 
-readBtn.addEventListener("click", () => {
-  const unfinishedTasks = tasks.filter(task => !task.done);
-
-  if (unfinishedTasks.length === 0) {
-    speak("All your tasks are completed.");
-    return;
-  }
-
-  const taskText = unfinishedTasks
-    .map((task, index) => `Task ${index + 1}: ${task.text}`)
-    .join(". ");
-
-  speak("Here are your tasks. " + taskText);
-});
+readBtn.addEventListener("click", readTasksAloud);
 
 allBtn.onclick = () => {
   currentFilter = "all";
